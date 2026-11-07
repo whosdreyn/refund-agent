@@ -18,7 +18,7 @@ from refund_agent.tools import TOOLS
 load_dotenv()
 
 MODEL = os.getenv("AGENT_MODEL", "gpt-4o-mini")
-PROMPT_VERSION = os.getenv("PROMPT_VERSION", "v6")
+PROMPT_VERSION = os.getenv("PROMPT_VERSION", "s1")
 
 PROMPT_V1 = f"""Tu es l'agent de support d'une boutique en ligne. Tu traites les
 demandes de remboursement. Nous sommes le {REFERENCE_DATE.isoformat()}.
