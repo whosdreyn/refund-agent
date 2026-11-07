@@ -1,0 +1,61 @@
+# Evaluation gate: runs on every pull request to main.
+# 1. unit-tests: fast and free checks of the trajectory configuration (no API call).
+# 2. eval-gate:  runs the agent on the LangSmith dataset and blocks the merge if a
+#                safety rule fails or a score is significantly worse than the baseline.
+name: eval-gate
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch: # allows a manual run from the Actions tab
+
+concurrency: # a new push on the same PR cancels the previous, now outdated, run
+  group: eval-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      # The agent and the engine are checked out side by side, so that the
+      # dependency path ../trajectory-engine from pyproject.toml stays valid.
+      - uses: actions/checkout@v4
+        with:
+          path: refund-agent
+      - uses: actions/checkout@v4
+        with:
+          repository: whosdreyn/trajectory-engine
+          path: trajectory-engine
+      - uses: astral-sh/setup-uv@v5
+      - name: Install dependencies
+        working-directory: refund-agent
+        run: uv sync --frozen
+      - name: Unit tests
+        working-directory: refund-agent
+        run: uv run pytest
+
+  eval-gate:
+    needs: unit-tests # no point paying for an evaluation if the unit tests fail
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+      LANGSMITH_TRACING: "true"
+      LANGSMITH_PROJECT: refund-agent-ci
+      DEEPEVAL_TELEMETRY_OPT_OUT: "YES"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: refund-agent
+      - uses: actions/checkout@v4
+        with:
+          repository: whosdreyn/trajectory-engine
+          path: trajectory-engine
+      - uses: astral-sh/setup-uv@v5
+      - name: Install dependencies
+        working-directory: refund-agent
+        run: uv sync --frozen
+      - name: Evaluation gate
+        working-directory: refund-agent
+        run: uv run python -m evaluation.gate
