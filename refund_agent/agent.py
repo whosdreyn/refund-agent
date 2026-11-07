@@ -1,6 +1,6 @@
 """Agent de remboursement : LangChain + mémoire LangGraph + réponse structurée.
 
-Démo : uv run agent.py
+Démo : uv run python -m refund_agent.agent
 """
 
 import os
@@ -11,14 +11,14 @@ from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 
-from data import REFERENCE_DATE, REFUND_WINDOW_DAYS
-from schemas import RefundResponse
-from tools import TOOLS
+from refund_agent.data import REFERENCE_DATE, REFUND_WINDOW_DAYS
+from refund_agent.schemas import RefundResponse
+from refund_agent.tools import TOOLS
 
 load_dotenv()
 
 MODEL = os.getenv("AGENT_MODEL", "gpt-4o-mini")
-PROMPT_VERSION = os.getenv("PROMPT_VERSION", "v3")
+PROMPT_VERSION = os.getenv("PROMPT_VERSION", "v6")
 
 PROMPT_V1 = f"""Tu es l'agent de support d'une boutique en ligne. Tu traites les
 demandes de remboursement. Nous sommes le {REFERENCE_DATE.isoformat()}.
@@ -116,7 +116,7 @@ def build_agent():
         # La mémoire stocke aussi la réponse structurée : on déclare sa classe
         # comme type autorisé à la relecture.
         checkpointer=MemorySaver(serde=JsonPlusSerializer(
-            allowed_msgpack_modules=[("schemas", "RefundResponse")])),
+            allowed_msgpack_modules=[("refund_agent.schemas", "RefundResponse")])),
         response_format=RefundResponse,
     )
 

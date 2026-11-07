@@ -1842,6 +1842,11 @@ dependencies = [
     { name = "trajectory-engine" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "deepeval", specifier = ">=4.3.2" },
@@ -1852,6 +1857,9 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.2.4" },
     { name = "trajectory-engine", editable = "../trajectory-engine" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=9.2.0" }]
 
 [[package]]
 name = "regex"

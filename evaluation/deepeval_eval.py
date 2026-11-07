@@ -8,9 +8,9 @@ Deux familles de métriques, deux façons de les brancher :
   elles comparent ce que l'agent a fait à ce qui était attendu.
 
 Usage :
-    uv run evaluate.py                    # les 7 métriques
-    uv run evaluate.py tool_correctness   # une seule (pour comprendre chacune)
-    uv run evaluate.py --list             # noms disponibles
+    uv run python -m evaluation.deepeval_eval                    # les 7 métriques
+    uv run python -m evaluation.deepeval_eval tool_correctness   # une seule (pour comprendre chacune)
+    uv run python -m evaluation.deepeval_eval --list             # noms disponibles
 """
 
 import json
@@ -28,8 +28,8 @@ from deepeval.metrics import (ArgumentCorrectnessMetric, GEval, PlanAdherenceMet
 from deepeval.test_case import LLMTestCase, SingleTurnParams, ToolCall
 from langchain_core.messages import AIMessage, ToolMessage
 
-from agent import PROMPT_VERSION, ask, build_agent
-from scenarios import goldens
+from refund_agent.agent import PROMPT_VERSION, ask, build_agent
+from evaluation.deepeval_scenarios import goldens
 
 load_dotenv()
 # gpt-4o-mini est trop faible pour juger une trajectoire (il a jugé "inutile"

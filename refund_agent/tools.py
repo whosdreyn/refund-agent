@@ -5,7 +5,7 @@ from itertools import count
 
 from langchain_core.tools import tool
 
-from data import CUSTOMERS, REFERENCE_DATE, REFUND_WINDOW_DAYS
+from refund_agent.data import CUSTOMERS, REFERENCE_DATE, REFUND_WINDOW_DAYS
 
 _ticket_numbers = count(1)
 
