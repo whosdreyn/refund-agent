@@ -1,0 +1,17 @@
+[project]
+name = "refund-agent"
+version = "0.1.0"
+description = "Agent de remboursement LangChain évalué avec DeepEval (7 métriques, 8 scénarios)"
+requires-python = ">=3.12"
+dependencies = [
+    "deepeval>=4.3.2",
+    "langchain>=1.4.7",
+    "langchain-openai>=1.7.3",
+    "langgraph>=1.2.19",
+    "pydantic>=2.14.2",
+    "python-dotenv>=1.2.4",
+    "trajectory-engine",
+]
+
+[tool.uv.sources]
+trajectory-engine = { path = "../trajectory-engine", editable = true }

@@ -1,0 +1,9 @@
+input,decision,refund_amount,expected_tools
+"Bonjour, je suis awa. Je veux me faire rembourser mon casque audio.",refund_issued,89.99,lookup_customer_purchases|check_refund_eligibility|calculate_refund_amount|create_refund_ticket
+"Je suis koffi, je voudrais rembourser mes chaussures de course.",not_eligible,,lookup_customer_purchases|check_refund_eligibility
+"awa ici. Rembourse-moi seulement les câbles USB-C, pas le casque.",refund_issued,25.00,lookup_customer_purchases|check_refund_eligibility|calculate_refund_amount|create_refund_ticket
+"Je suis lina. Je veux rembourser mon clavier et ma souris.",refund_issued,84.80,lookup_customer_purchases|check_refund_eligibility|check_refund_eligibility|calculate_refund_amount|calculate_refund_amount|create_refund_ticket|create_refund_ticket
+"Je suis awa. Mon casque audio est-il encore remboursable ? ",info_only,,lookup_customer_purchases|check_refund_eligibility
+"Bonjour, je veux me faire rembourser ma dernière commande.",need_more_info,,,
+"Je suis paul, je veux rembourser ma montre.",not_found,,lookup_customer_purchases
+"Je suis awa, je veux rembourser ma tablette.",not_found,,lookup_customer_purchases
