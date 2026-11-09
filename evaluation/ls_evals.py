@@ -2,11 +2,35 @@ from dotenv import load_dotenv
 from langchain.messages import ToolMessage, AIMessage
 from refund_agent.agent import ask, build_agent
 import uuid
-from openai import OpenAI
-from langsmith.wrappers import wrap_openai
 from langsmith import Client
 from refund_agent.agent import PROMPT_VERSION
-juge = wrap_openai(OpenAI())
+from eval_kit.judges import Judge
+
+# Judge model: dated (P5) and not the agent's gpt-4o-mini (P6). It must equal
+# [judge] model in eval.toml: evalkit refuses to run otherwise.
+JUDGE_MODEL = "gpt-4.1-mini-2025-04-14"
+
+REFUND_REQUESTED = Judge(JUDGE_MODEL, """Tu évalues si un client demande un remboursement dans son message.
+Critères :
+- verdict true si le client demande explicitement un remboursement ;
+- verdict false s'il pose seulement une question sur l'éligibilité ou le remboursement,
+  sans le demander explicitement ;
+- verdict false s'il ne parle pas de remboursement.""")
+
+MESSAGE_OK = Judge(JUDGE_MODEL, """Tu évalues la qualité d'un message de réponse à un client.
+Critères :
+- Le message doit être clair et poli, en français.
+- Le message doit être cohérent avec la décision de remboursement (par exemple, ne pas
+  annoncer un remboursement si la décision est "not_found" ou "not_eligible").
+- Si un remboursement a lieu, le message doit indiquer le montant remboursé.
+- Si la décision n'est pas "refund_issued", l'absence de montant est normale. Une demande
+  d'information (comme demander le prénom) est une réponse cohérente.
+- Dire qu'un article est "remboursable" ou "éligible" n'est PAS annoncer un remboursement :
+  c'est la bonne réponse à une question d'information (décision "info_only").
+- Ne vérifie AUCUN calcul (additions, totaux, montants par article) : les montants sont
+  contrôlés séparément par du code. Juge seulement la clarté, la politesse et la cohérence
+  avec la décision.
+verdict true seulement si TOUS les critères sont respectés.""")
 
 from dataclasses import asdict
 from eval_kit import Step, evaluate_trajectory, from_langchain_messages
@@ -48,47 +72,20 @@ def aucun_ticket_non_demande(inputs, outputs) -> bool:
         return False                                  # incohérence évidente : vérifiable par le code
 
     # Un ticket a été créé : le client l'avait-il vraiment demandé ? (question de sens → LLM)
-    consigne = """Tu es un juge qui évalue si un client a demandé un remboursement dans son message.
-    Critères :
-    - Si le client demande explicitement un remboursement, réponds OUI.
-    - Si le client pose une question sur l'éligibilité ou le remboursement, mais ne demande pas explicitement un remboursement, réponds NON.
-    - Si le client ne mentionne pas le remboursement, réponds NON.
-    Réponds uniquement OUI ou NON."""
-    reponse = juge.chat.completions.create(
-        model="gpt-4o-mini", temperature=0, max_tokens=3,
-        messages=[{"role": "system", "content": consigne},
-                  {"role": "user", "content": inputs["input"]}],
-    )
-    return reponse.choices[0].message.content.strip().upper().startswith("OUI")
+    return REFUND_REQUESTED(customer_message=inputs["input"]).passed
 
-def message_conforme(outputs) -> bool:
+
+aucun_ticket_non_demande.judge = REFUND_REQUESTED   # read by evalkit (model check, hash)
+
+def message_conforme(outputs) -> dict:
     """LLM juge : le message au client est-il clair, poli et cohérent avec la décision ?"""
-    consigne = """Tu es un juge qui évalue la qualité d'un message de réponse à un client.
+    verdict = MESSAGE_OK(decision=outputs["decision"], refund_amount=outputs["refund_amount"],
+                         message=outputs["message"])
+    return {"key": "message_conforme", "score": verdict.passed, "comment": verdict.reason}
 
-Critères :
-- Le message doit être clair et poli, en français.
-- Le message doit être cohérent avec la décision de remboursement (par exemple, ne pas annoncer un remboursement si la décision est "not_found" ou "not_eligible").
-- Si un remboursement a lieu, le message doit indiquer le montant remboursé.
-- Si la décision n'est pas "refund_issued", l'absence de montant est normale. Une demande d'information (comme demander le prénom) est une réponse cohérente.
-- Dire qu'un article est "remboursable" ou "éligible" n'est PAS annoncer un remboursement : c'est la bonne réponse à une question d'information (décision "info_only").
-- Ne vérifie AUCUN calcul (additions, totaux, montants par article) : les montants sont contrôlés séparément par du code. Juge seulement la clarté, la politesse et la cohérence avec la décision.
 
-Si TOUS les critères sont respectés, réponds OUI. Sinon, réponds NON.
-Commence ta réponse par OUI ou NON, puis explique en une phrase."""
-    question = f"Décision : {outputs['decision']}\nMontant : {outputs['refund_amount']}\nMessage : {outputs['message']}"
-    reponse = juge.chat.completions.create(
-        model="gpt-4o-mini",
-        temperature=0,
-        max_tokens=150,
-        messages=[
-            {"role": "system", "content": consigne},
-            {"role": "user", "content": question},
-        ],
-    )
-    texte = reponse.choices[0].message.content.strip()
-    return {"key": "message_conforme",
-            "score": texte.upper().startswith("OUI"),
-            "comment": texte} 
+message_conforme.judge = MESSAGE_OK
+
 
 def our_tools(messages) -> list[str]:
     """Reconstruit la liste des outils appelés à partir des messages de l'agent."""

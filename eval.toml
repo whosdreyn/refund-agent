@@ -6,6 +6,7 @@
 profile    = "agent"
 target     = "evaluation.ls_evals:target"
 evaluators = "evaluation.ls_evals:EVALUATORS"
+agent_model = "gpt-4o-mini"   # the judge must be another model (P6)
 
 [dataset]
 name  = "refund-scenarios"
@@ -13,10 +14,10 @@ tag   = "v1"        # frozen with: uv run python -m scripts.freeze_dataset v1
 split = "holdout"
 
 [judge]
-# Model used by the LLM evaluators (message_conforme, aucun_ticket_non_demande).
-# Known gap: it is an undated alias and the same model as the agent (design
-# principles P5 and P6); to fix when the judges move into eval-kit.
-model = "gpt-4o-mini"
+# Model of the LLM judges (message_conforme, aucun_ticket_non_demande), built with
+# eval_kit.judges.Judge in evaluation/ls_evals.py (JUDGE_MODEL must be the same:
+# evalkit refuses to run otherwise). Dated (P5), not the agent's model (P6).
+model = "gpt-4.1-mini-2025-04-14"
 
 [run]
 repetitions     = 3
@@ -44,4 +45,6 @@ outils_corrects   = 0
 
 [baseline]
 # v6 prompt + code guardrail, dataset v1/holdout, created 2026-11-09 with `evalkit run`.
+# Measured with the former gpt-4o-mini judges: still valid for the primary metrics,
+# which are code checks; only message_conforme (secondary, report only) differs.
 experiment = "evalkit-d7fab843"
