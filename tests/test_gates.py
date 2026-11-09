@@ -3,7 +3,7 @@
 import pytest
 
 from evaluation.config_trajectoire import GATES
-from trajectory_engine import Step, check_gates
+from eval_kit import Step, check_gates
 
 
 def lookup(*purchases):

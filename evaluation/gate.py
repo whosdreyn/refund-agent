@@ -8,7 +8,7 @@ from langsmith import Client
 
 from evaluation import ls_evals
 from evaluation.comparer import scores_par_scenario
-from trajectory_engine.stats import bootstrap_diff_ci
+from eval_kit.stats import bootstrap_diff_ci
 
 BASELINE_FILE = Path(__file__).resolve().parents[1] / "data" / "baseline.json"
 REGRESSION_EVALUATORS = ["decision_correcte", "montant_correct", "outils_corrects"]
@@ -20,7 +20,8 @@ def run_candidate() -> str:
         ls_evals.target,
         data="refund-scenarios",
         evaluators=[ls_evals.decision_correcte, ls_evals.montant_correct, ls_evals.outils_corrects,
-                    ls_evals.aucun_ticket_non_demande, ls_evals.message_conforme, ls_evals.trajectoire_dag],
+                    ls_evals.aucun_ticket_non_demande, ls_evals.message_conforme, ls_evals.trajectoire_dag,
+                    ls_evals.garde_fou_declenche],
         experiment_prefix="ci",
         num_repetitions=3,
         max_concurrency=4,

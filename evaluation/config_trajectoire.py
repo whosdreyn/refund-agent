@@ -1,12 +1,12 @@
 """Trajectory engine configuration for the refund agent.
 
-Three parts, read by trajectory_engine.evaluate_trajectory:
+Three parts, read by eval_kit.evaluate_trajectory:
   - TRANSITIONS: which tool may follow which (the DAG);
   - ARGUMENTS: where each controlled tool argument must come from;
   - GATES: the business checks required before a risky tool call.
 """
 
-from trajectory_engine import END, START
+from eval_kit import END, START
 
 # Allowed successors of each node. Self-loops let the agent handle several items
 # (lina: check → check, calculate → calculate, ticket → ticket), and ticket → check

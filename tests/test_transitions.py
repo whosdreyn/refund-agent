@@ -3,7 +3,7 @@
 import pytest
 
 from evaluation.config_trajectoire import TRANSITIONS
-from trajectory_engine import Step, check_transitions
+from eval_kit import Step, check_transitions
 
 
 def trajectory(*tools):

@@ -4,8 +4,8 @@ A LangChain customer-support agent that handles refund requests, evaluated end t
 LangSmith datasets and evaluators, an LLM judge, a step-level trajectory engine,
 sabotage tests, bootstrap statistics and a CI regression gate.
 
-The trajectory checks come from [trajectory-engine](https://github.com/whosdreyn/trajectory-engine),
-which must be cloned next to this repository (`../trajectory-engine`).
+The trajectory checks, statistics and gate helpers come from [eval-kit](https://github.com/whosdreyn/eval-kit),
+which must be cloned next to this repository (`../eval-kit`).
 
 ## Layout
 
@@ -26,7 +26,7 @@ docs/           learning path, method sheet and DeepEval guide
 ## Setup
 
 ```bash
-git clone https://github.com/whosdreyn/trajectory-engine
+git clone https://github.com/whosdreyn/eval-kit
 git clone https://github.com/whosdreyn/refund-agent
 cd refund-agent
 cp .env.example .env   # OPENAI_API_KEY, LANGSMITH_API_KEY, LANGSMITH_TRACING=true, LANGSMITH_PROJECT

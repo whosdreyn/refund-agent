@@ -18,14 +18,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # The agent and the engine are checked out side by side, so that the
-      # dependency path ../trajectory-engine from pyproject.toml stays valid.
+      # dependency path ../eval-kit from pyproject.toml stays valid.
       - uses: actions/checkout@v4
         with:
           path: refund-agent
       - uses: actions/checkout@v4
         with:
-          repository: whosdreyn/trajectory-engine
-          path: trajectory-engine
+          repository: whosdreyn/eval-kit
+          path: eval-kit
       - uses: astral-sh/setup-uv@v5
       - name: Install dependencies
         working-directory: refund-agent
@@ -50,8 +50,8 @@ jobs:
           path: refund-agent
       - uses: actions/checkout@v4
         with:
-          repository: whosdreyn/trajectory-engine
-          path: trajectory-engine
+          repository: whosdreyn/eval-kit
+          path: eval-kit
       - uses: astral-sh/setup-uv@v5
       - name: Install dependencies
         working-directory: refund-agent

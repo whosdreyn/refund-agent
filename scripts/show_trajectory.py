@@ -8,7 +8,7 @@ import sys
 import uuid
 
 from refund_agent.agent import ask, build_agent
-from trajectory_engine import from_langchain_messages
+from eval_kit import from_langchain_messages
 
 DEFAULT_REQUEST = "awa ici. Je veux rembourser un seul des deux câbles USB-C, je garde l'autre."
 

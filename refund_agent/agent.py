@@ -12,6 +12,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 
 from refund_agent.data import REFERENCE_DATE, REFUND_WINDOW_DAYS
+from refund_agent.guards import refund_request_guard
 from refund_agent.schemas import RefundResponse
 from refund_agent.tools import TOOLS
 
@@ -113,6 +114,9 @@ def build_agent():
         model=ChatOpenAI(model=MODEL, temperature=0),
         tools=TOOLS,
         system_prompt=SYSTEM_PROMPT,
+        # Garde-fou en code : pas de ticket sans demande explicite du client,
+        # quoi que décide le modèle (voir refund_agent/guards.py).
+        middleware=[refund_request_guard],
         # La mémoire stocke aussi la réponse structurée : on déclare sa classe
         # comme type autorisé à la relecture.
         checkpointer=MemorySaver(serde=JsonPlusSerializer(
