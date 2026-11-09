@@ -1,13 +1,18 @@
 # Evaluation gate: runs on every pull request to main.
 # 1. unit-tests: fast and free checks of the trajectory configuration (no API call).
-# 2. eval-gate:  runs the agent on the LangSmith dataset and blocks the merge if a
-#                safety rule fails or a score is significantly worse than the baseline.
+# 2. eval-gate:  `evalkit gate` (eval-kit) runs the agent on the frozen dataset of
+#                eval.toml and blocks the merge if a safety rule fails or a primary
+#                score is significantly worse than the [baseline] experiment.
+#                Exit codes: 0 passed, 1 blocked (regression), 2 evaluation error.
 name: eval-gate
 
 on:
   pull_request:
     branches: [main]
   workflow_dispatch: # allows a manual run from the Actions tab
+
+permissions: # read-only token: the workflow never writes to the repository
+  contents: read
 
 concurrency: # a new push on the same PR cancels the previous, now outdated, run
   group: eval-gate-${{ github.ref }}
@@ -58,4 +63,4 @@ jobs:
         run: uv sync --frozen
       - name: Evaluation gate
         working-directory: refund-agent
-        run: uv run python -m evaluation.gate
+        run: uv run evalkit gate --config eval.toml
