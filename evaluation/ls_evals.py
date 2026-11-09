@@ -9,7 +9,7 @@ from refund_agent.agent import PROMPT_VERSION
 juge = wrap_openai(OpenAI())
 
 from dataclasses import asdict
-from trajectory_engine import Step, evaluate_trajectory, from_langchain_messages
+from eval_kit import Step, evaluate_trajectory, from_langchain_messages
 from evaluation.config_trajectoire import TRANSITIONS, ARGUMENTS, GATES
 
 agent = build_agent()

@@ -3,7 +3,7 @@
 import pytest
 
 from evaluation.config_trajectoire import ARGUMENTS
-from trajectory_engine import Step, check_arguments
+from eval_kit import Step, check_arguments
 
 AWA_PURCHASES = {"found": True, "purchases": [
     {"order_id": "A100", "item": "casque audio", "unit_price": 89.99, "quantity": 1, "purchase_date": "2026-10-20"},

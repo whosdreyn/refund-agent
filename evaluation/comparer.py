@@ -3,7 +3,7 @@ from collections import defaultdict
 from dotenv import load_dotenv
 from langsmith import Client
 
-from trajectory_engine.stats import bootstrap_diff_ci
+from eval_kit.stats import bootstrap_diff_ci
 
 load_dotenv()
 client = Client()

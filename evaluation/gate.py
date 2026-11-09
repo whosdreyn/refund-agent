@@ -8,7 +8,7 @@ from langsmith import Client
 
 from evaluation import ls_evals
 from evaluation.comparer import scores_par_scenario
-from trajectory_engine.stats import bootstrap_diff_ci
+from eval_kit.stats import bootstrap_diff_ci
 
 BASELINE_FILE = Path(__file__).resolve().parents[1] / "data" / "baseline.json"
 REGRESSION_EVALUATORS = ["decision_correcte", "montant_correct", "outils_corrects"]

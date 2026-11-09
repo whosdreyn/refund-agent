@@ -10,11 +10,11 @@ dependencies = [
     "langgraph>=1.2.19",
     "pydantic>=2.14.2",
     "python-dotenv>=1.2.4",
-    "trajectory-engine",
+    "eval-kit",
 ]
 
 [tool.uv.sources]
-trajectory-engine = { path = "../trajectory-engine", editable = true }
+eval-kit = { path = "../eval-kit", editable = true }
 
 [dependency-groups]
 dev = [
