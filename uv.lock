@@ -430,6 +430,7 @@ version = "0.1.0"
 source = { editable = "../eval-kit" }
 dependencies = [
     { name = "langsmith" },
+    { name = "openai" },
     { name = "pydantic" },
     { name = "python-dotenv" },
 ]
@@ -437,6 +438,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "langsmith", specifier = ">=0.10.15" },
+    { name = "openai", specifier = ">=1.40" },
     { name = "pydantic", specifier = ">=2.14.3" },
     { name = "python-dotenv", specifier = ">=1.0" },
 ]
