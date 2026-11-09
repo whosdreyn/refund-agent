@@ -143,14 +143,20 @@ def trajectoire_dag(outputs) -> dict:
             }
 
 
+# Every evaluator of the project: eval.toml points to this list
+# ([project] evaluators = "evaluation.ls_evals:EVALUATORS").
+EVALUATORS = [decision_correcte, montant_correct, outils_corrects,
+              aucun_ticket_non_demande, message_conforme, trajectoire_dag,
+              garde_fou_declenche]
+
+
 if __name__ == "__main__":
-    #print(target({"input": "Je suis koffi, je voudrais rembourser mes chaussures de course."}).keys())
+    # Ad-hoc experiment on the latest dataset, tagged with the prompt version.
+    # The CI gate uses `evalkit gate` instead (see eval.toml).
     Client().evaluate(
         target,
         data="refund-scenarios",
-        evaluators=[decision_correcte, montant_correct, outils_corrects,
-                    aucun_ticket_non_demande, message_conforme, trajectoire_dag,
-                    garde_fou_declenche],
+        evaluators=EVALUATORS,
         experiment_prefix=f"prompt-{PROMPT_VERSION}",
         metadata={"prompt_version": PROMPT_VERSION},
          num_repetitions=3,
